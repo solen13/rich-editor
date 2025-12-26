@@ -1,7 +1,11 @@
 {
-  "name": "my-vue-library",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@ugur/vue-flexible-text-editor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/solen13/rich-editor"
+  },
+  "private": false,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
