@@ -1,39 +1,43 @@
 <template>
-  <div class="custom-editor-wrapper" @click="deselectMedia">
-    <div class="toolbar">
-      <div class="group">
+  <div
+    class="ve-custom-editor-wrapper"
+    :style="{ '--ve-border-color': borderColor }"
+    @click="deselectMedia"
+  >
+    <div class="ve-toolbar">
+      <div class="ve-group">
         <button
           @click="execAction('formatBlock', 'H1')"
-          :class="{ active: isTag('H1') }"
+          :class="{ 've-active': isTag('H1') }"
         >
           H1
         </button>
         <button
           @click="execAction('formatBlock', 'H2')"
-          :class="{ active: isTag('H2') }"
+          :class="{ 've-active': isTag('H2') }"
         >
           H2
         </button>
         <button
           @click="execAction('formatBlock', 'H3')"
-          :class="{ active: isTag('H3') }"
+          :class="{ 've-active': isTag('H3') }"
         >
           H3
         </button>
         <button
           @click="execAction('formatBlock', 'P')"
-          :class="{ active: isTag('P') }"
+          :class="{ 've-active': isTag('P') }"
         >
-          Metin
+          Text
         </button>
       </div>
 
-      <div class="divider"></div>
+      <div class="ve-divider"></div>
 
-      <div class="group">
+      <div class="ve-group">
         <select
           @change="execAction('fontName', $event.target.value)"
-          class="font-select"
+          class="ve-font-select ve-input"
         >
           <option value="Arial">Arial</option>
           <option value="Verdana">Verdana</option>
@@ -42,7 +46,7 @@
         </select>
         <select
           @change="execAction('fontSize', $event.target.value)"
-          class="size-select"
+          class="ve-size-select ve-input"
         >
           <option value="1">S</option>
           <option value="3" selected>M</option>
@@ -51,9 +55,9 @@
         </select>
       </div>
 
-      <div class="divider"></div>
+      <div class="ve-divider"></div>
 
-      <div class="group">
+      <div class="ve-group">
         <button @click="execAction('bold')" title="Kalın"><b>B</b></button>
         <button @click="execAction('italic')" title="İtalik"><i>I</i></button>
         <button @click="execAction('underline')" title="Altı Çizili">
@@ -62,18 +66,17 @@
         <input
           type="color"
           @input="execAction('foreColor', $event.target.value)"
-          class="color-picker"
-          title="Yazı Rengi"
+          class="ve-color-picker"
         />
       </div>
 
-      <div class="divider"></div>
+      <div class="ve-divider"></div>
 
-      <div class="group">
-        <button @click="addLink" title="Link Ekle">🔗</button>
-        <button @click="$refs.fileInput.click()" title="Resim Ekle">🖼️</button>
-        <button @click="addYoutubeVideo" title="Youtube Ekle">📺</button>
-        <button @click="insertTable" title="Tablo Ekle">📊</button>
+      <div class="ve-group">
+        <button @click="addLink">🔗</button>
+        <button @click="$refs.fileInput.click()">🖼️</button>
+        <button @click="addYoutubeVideo">📺</button>
+        <button @click="insertTable">📊</button>
         <input
           type="file"
           ref="fileInput"
@@ -83,50 +86,38 @@
         />
       </div>
 
-      <div class="divider"></div>
+      <div class="ve-divider"></div>
 
-      <div class="group">
+      <div class="ve-group">
         <button @click="execAction('justifyLeft')">⬅️</button>
         <button @click="execAction('justifyCenter')">⬆️</button>
         <button @click="execAction('justifyRight')">➡️</button>
         <button
+          v-if="allowPreview"
           @click="showPreview = true"
-          class="preview-btn"
-          title="Ön İzleme"
+          class="ve-preview-btn"
         >
           👁️
         </button>
       </div>
-
-      <div class="divider"></div>
-
-      <div class="group">
-        <button @click="exportToPDF" class="export-btn pdf" title="PDF İndir">
-          📄 PDF
-        </button>
-        <button
-          @click="exportToWord"
-          class="export-btn word"
-          title="Word İndir"
-        >
-          📝 DOC
-        </button>
-      </div>
     </div>
 
-    <div class="editor-container">
+    <div class="ve-editor-container">
       <div
-        id="editor-content-area"
         ref="editorRef"
-        class="editor-area"
+        class="ve-editor-area"
         contenteditable="true"
         @input="updateContent"
         @click="handleEditorClick"
       ></div>
 
-      <div v-if="selectedMedia" class="resizer-overlay" :style="resizerStyle">
+      <div
+        v-if="selectedMedia"
+        class="ve-resizer-overlay"
+        :style="resizerStyle"
+      >
         <div
-          class="resizer-handle"
+          class="ve-resizer-handle"
           @mousedown.stop.prevent="startResizing"
         ></div>
       </div>
@@ -135,29 +126,29 @@
     <Teleport to="body">
       <div
         v-if="showPreview"
-        class="modal-overlay"
+        class="ve-modal-overlay"
         @click.self="showPreview = false"
       >
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>İçerik Ön İzleme</h3>
-            <button @click="showPreview = false" class="close-modal">X</button>
+        <div class="ve-modal-content">
+          <div class="ve-modal-header">
+            <h3>Preview</h3>
+            <button @click="showPreview = false" class="ve-close-modal">
+              X
+            </button>
           </div>
-          <div class="preview-body" v-html="content"></div>
+          <div class="ve-preview-body" v-html="content"></div>
         </div>
       </div>
     </Teleport>
-
-    <div class="footer">
-      <span>Karakter: {{ charCount }}</span>
-      <span>Esnek Mod: Aktif (PDF/Word Aktarımı Eklendi)</span>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-
+import { ref, onMounted, defineEmits } from "vue";
+const props = defineProps({
+  allowPreview: { type: Boolean, default: true },
+});
+const emit = defineEmits(["update:modelValue", "change"]);
 const editorRef = ref(null);
 const fileInput = ref(null);
 const content = ref("");
@@ -262,7 +253,7 @@ const handleImageUpload = (e) => {
 };
 
 const addLink = () => {
-  const url = prompt("URL giriniz:", "https://");
+  const url = prompt("Add url", "");
   if (url) execAction("createLink", url);
 };
 
@@ -337,6 +328,7 @@ const updateContent = () => {
     content.value = editorRef.value.innerHTML;
     charCount.value = editorRef.value.innerText.length;
   }
+  emit("update:modelValue", editorRef.value.innerHTML);
 };
 
 onMounted(() => {
@@ -344,16 +336,17 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
-/* Mevcut stiller korunuyor */
-.custom-editor-wrapper {
-  border: 2px solid #2c3e50;
+<style>
+.ve-custom-editor-wrapper {
+  border: 2px solid var(--ve-border-color, #2c3e50);
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
   font-family: "Segoe UI", sans-serif;
+  box-sizing: border-box;
 }
-.toolbar {
+
+.ve-toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -362,12 +355,14 @@ onMounted(() => {
   border-bottom: 2px solid #eee;
   align-items: center;
 }
-.group {
+
+.ve-group {
   display: flex;
   gap: 5px;
   align-items: center;
 }
-.toolbar button {
+
+.ve-toolbar button {
   padding: 6px 10px;
   border: 1px solid #ddd;
   background: white;
@@ -376,82 +371,65 @@ onMounted(() => {
   font-weight: 600;
   transition: 0.2s;
 }
-.toolbar button:hover {
-  background: #e9ecef;
-}
-.preview-btn {
-  background: #27ae60 !important;
-  color: white !important;
-  border: none !important;
-}
 
-/* YENİ: Dışa Aktar Buton Stilleri */
-.export-btn.pdf {
-  background: #e74c3c !important;
-  color: white !important;
-  border: none !important;
-}
-.export-btn.word {
-  background: #2980b9 !important;
-  color: white !important;
-  border: none !important;
-}
-
-.toolbar button.active {
+.ve-toolbar button.ve-active {
   background: #3498db;
   color: white;
   border-color: #2980b9;
 }
-.font-select,
-.size-select {
-  padding: 5px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+
+.ve-preview-btn {
+  background: #27ae60 !important;
+  color: white !important;
+  border: none !important;
 }
-.color-picker {
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-}
-.divider {
+.ve-divider {
   width: 1px;
   height: 30px;
   background: #ddd;
 }
-.editor-container {
+
+.ve-editor-container {
   position: relative;
+  width: 100%;
 }
-.editor-area {
+.ve-editor-area {
   min-height: 400px;
   padding: 30px;
   outline: none;
   line-height: 1.6;
   font-size: 16px;
+  background: white;
+  color: #333;
+  word-wrap: break-word;
 }
 
-/* Resizer ve Medya Stilleri (Mevcut olanlarla aynı) */
-:deep(.resizable-media) {
+.ve-editor-area :deep(h1) {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+.ve-editor-area :deep(h2) {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.ve-editor-area :deep(p) {
+  margin-bottom: 1rem;
+}
+.ve-editor-area :deep(.resizable-media) {
   cursor: pointer;
   margin: 10px 5px;
   display: inline-block;
-  vertical-align: top;
   border: 2px solid transparent;
 }
-:deep(table.resizable-media) {
-  border-collapse: collapse;
-}
-:deep(.resizable-media:hover) {
-  border-color: #3498db;
-}
-.resizer-overlay {
+
+.ve-resizer-overlay {
   position: absolute;
   pointer-events: none;
   border: 2px solid #3498db;
   z-index: 10;
 }
-.resizer-handle {
+.ve-resizer-handle {
   position: absolute;
   width: 15px;
   height: 15px;
@@ -461,11 +439,9 @@ onMounted(() => {
   cursor: nwse-resize;
   pointer-events: auto;
   border-radius: 50%;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Modal Stilleri (Mevcut olanlarla aynı) */
-.modal-overlay {
+.ve-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -475,44 +451,30 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 9999;
 }
-.modal-content {
+.ve-modal-content {
   background: #fff;
   width: 85%;
   max-height: 85%;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
-.modal-header {
+.ve-modal-header {
   padding: 15px 20px;
-  background: #f8f9fa;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
-.preview-body {
+.ve-preview-body {
   padding: 30px;
   overflow-y: auto;
   flex-grow: 1;
 }
-.close-modal {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 5px 12px;
+.ve-input {
+  padding: 5px;
   border-radius: 4px;
-  cursor: pointer;
-}
-.footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 20px;
-  background: #2c3e50;
-  color: #ecf0f1;
-  font-size: 12px;
+  border: 1px solid #ddd;
 }
 </style>

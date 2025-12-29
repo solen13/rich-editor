@@ -1,22 +1,19 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import path from "path";
+import { resolve } from "path";
 
 export default defineConfig({
   plugins: [vue()],
   build: {
     lib: {
-      entry: path.resolve(__dirname, "src/index.js"), // Giriş dosyan
-      name: "FlexibleTextEditor",
-      fileName: (format) => `flexible-text-editor.${format}.js`,
+      entry: resolve(__dirname, "index.js"),
+      name: "vue-flex-editor",
+      fileName: "vue-flex-editor",
     },
     rollupOptions: {
-      // Vue'yu pakete dahil etme (kullanıcının projesindeki Vue kullanılır)
-      external: ["vue"],
+      external: ["vue"], // Vue'yu paketin içine gömme, dışarıdan kullansın
       output: {
-        globals: {
-          vue: "Vue",
-        },
+        globals: { vue: "Vue" },
       },
     },
   },
