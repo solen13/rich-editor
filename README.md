@@ -1,5 +1,63 @@
-# Vue 3 + Vite
+# Vue Flexible text editor
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+**vue-flexible-text-editor** is built on top of.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+😎 **Modern** and 🚀 **flexible** text editor for Vue.js
+
+[Demo](https://vue-spring-bottom-sheet.douxcode.com/) 👀
+
+# Installation
+
+```
+npm install vue-flexible-text-editor
+```
+
+```
+yarn add  vue-flexible-text-editor
+```
+
+# Getting started
+
+## Basic usage
+
+## Basic usage `setup`
+
+```vue
+<script setup lang="ts">
+import editor from "vue-flexible-text-editor";
+
+import { ref } from "vue";
+
+const editHTML = ref("");
+</script>
+
+<template>
+  <editor v-model="editHTML"> Your content </editor>
+</template>
+```
+
+## Usage in Nuxt 3
+
+For Nuxt 3, just wrap component in `<ClientOnly>`
+
+```vue
+<template>
+  <ClientOnly>
+    <editor v-model="editHTML"> Your awesome content </editor>
+  </ClientOnly>
+</template>
+```
+
+## Props
+
+### Prop Definitions
+
+| Prop         | Type    | Default | Description |
+| ------------ | ------- | ------- | ----------- |
+| allowPreview | Boolean | true    | preview     |
+
+## Events
+
+| Event   | Description          | Payload |
+| ------- | -------------------- | ------- |
+| v-model | Emitted v-model emit | -       |

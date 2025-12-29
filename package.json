@@ -5,7 +5,7 @@
     "url": "https://github.com/solen13/rich-editor"
   },
   "private": false,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
