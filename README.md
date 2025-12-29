@@ -4,7 +4,7 @@
 
 😎 **Modern** and 🚀 **flexible** text editor for Vue.js
 
-[Demo](https://vue-spring-bottom-sheet.douxcode.com/) 👀
+[Demo]() 👀
 
 # Installation
 
@@ -32,7 +32,7 @@ const editHTML = ref("");
 </script>
 
 <template>
-  <editor v-model="editHTML"> Your content </editor>
+  <editor v-model="editHTML"> </editor>
 </template>
 ```
 
@@ -58,6 +58,6 @@ For Nuxt 3, just wrap component in `<ClientOnly>`
 
 ## Events
 
-| Event   | Description          | Payload |
-| ------- | -------------------- | ------- |
-| v-model | Emitted v-model emit | -       |
+| Event   | Description     | Payload |
+| ------- | --------------- | ------- |
+| v-model | Emitted v-model | -       |
