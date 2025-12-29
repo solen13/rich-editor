@@ -18,8 +18,6 @@ yarn add  vue-flexible-text-editor
 
 # Getting started
 
-## Basic usage
-
 ## Basic usage `setup`
 
 ```vue
