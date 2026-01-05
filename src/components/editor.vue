@@ -3,35 +3,87 @@
     class="ve-custom-editor-wrapper"
     :style="{ '--ve-border-color': borderColor }"
     @click="deselectMedia"
+    @keydown.enter="handleEnter"
+    @mouseup="updateButtonStates"
+    @keyup="updateButtonStates"
   >
     <div class="ve-toolbar">
       <div class="ve-group">
         <button
           @click="execAction('formatBlock', 'H1')"
-          :class="{ 've-active': isTag('H1') }"
+          :class="{ 've-active': activeStates.H1 }"
         >
           H1
         </button>
         <button
           @click="execAction('formatBlock', 'H2')"
-          :class="{ 've-active': isTag('H2') }"
+          :class="{ 've-active': activeStates.H2 }"
         >
           H2
         </button>
         <button
           @click="execAction('formatBlock', 'H3')"
-          :class="{ 've-active': isTag('H3') }"
+          :class="{ 've-active': activeStates.H3 }"
         >
           H3
         </button>
         <button
           @click="execAction('formatBlock', 'P')"
-          :class="{ 've-active': isTag('P') }"
+          :class="{ 've-active': activeStates.P }"
         >
           Text
         </button>
       </div>
+      <div class="ve-divider"></div>
 
+      <div class="ve-group">
+        <button
+          @click="execAction('insertUnorderedList')"
+          title="Noktalı Liste"
+          :class="{ 've-active': activeStates.ul }"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="9" y1="6" x2="20" y2="6"></line>
+            <line x1="9" y1="12" x2="20" y2="12"></line>
+            <line x1="9" y1="18" x2="20" y2="18"></line>
+            <circle cx="4" cy="6" r="1.5" fill="currentColor"></circle>
+            <circle cx="4" cy="12" r="1.5" fill="currentColor"></circle>
+            <circle cx="4" cy="18" r="1.5" fill="currentColor"></circle>
+          </svg>
+        </button>
+        <button
+          @click="execAction('insertOrderedList')"
+          title="Numaralı Liste"
+          :class="{ 've-active': activeStates.ol }"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="10" y1="6" x2="21" y2="6"></line>
+            <line x1="10" y1="12" x2="21" y2="12"></line>
+            <line x1="10" y1="18" x2="21" y2="18"></line>
+            <path d="M4 6h1v4"></path>
+            <path d="M4 10h2"></path>
+            <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path>
+          </svg>
+        </button>
+      </div>
       <div class="ve-divider"></div>
 
       <div class="ve-group">
@@ -58,9 +110,25 @@
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <button @click="execAction('bold')" title="Kalın"><b>B</b></button>
-        <button @click="execAction('italic')" title="İtalik"><i>I</i></button>
-        <button @click="execAction('underline')" title="Altı Çizili">
+        <button
+          @click="execAction('bold')"
+          title="Kalın"
+          :class="{ 've-active': activeStates.bold }"
+        >
+          <b>B</b>
+        </button>
+        <button
+          @click="execAction('italic')"
+          :class="{ 've-active': activeStates.italic }"
+          title="İtalik"
+        >
+          <i>I</i>
+        </button>
+        <button
+          @click="execAction('underline')"
+          :class="{ 've-active': activeStates.underline }"
+          title="Altı Çizili"
+        >
           <u>U</u>
         </button>
         <input
@@ -89,9 +157,66 @@
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <button @click="execAction('justifyLeft')">⬅️</button>
-        <button @click="execAction('justifyCenter')">⬆️</button>
-        <button @click="execAction('justifyRight')">➡️</button>
+        <button
+          @click="execAction('justifyLeft')"
+          :class="{ 've-active': activeStates.alignLeft }"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="17" y1="10" x2="3" y2="10"></line>
+            <line x1="21" y1="6" x2="3" y2="6"></line>
+            <line x1="21" y1="14" x2="3" y2="14"></line>
+            <line x1="17" y1="18" x2="3" y2="18"></line>
+          </svg>
+        </button>
+        <button
+          @click="execAction('justifyCenter')"
+          :class="{ 've-active': activeStates.alignCenter }"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="10" x2="6" y2="10"></line>
+            <line x1="21" y1="6" x2="3" y2="6"></line>
+            <line x1="21" y1="14" x2="3" y2="14"></line>
+            <line x1="18" y1="18" x2="6" y2="18"></line>
+          </svg>
+        </button>
+        <button
+          @click="execAction('justifyRight')"
+          :class="{ 've-active': activeStates.alignRight }"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="21" y1="10" x2="7" y2="10"></line>
+            <line x1="21" y1="6" x2="3" y2="6"></line>
+            <line x1="21" y1="14" x2="3" y2="14"></line>
+            <line x1="21" y1="18" x2="7" y2="18"></line>
+          </svg>
+        </button>
         <button
           v-if="allowPreview"
           @click="showPreview = true"
@@ -157,59 +282,118 @@ const selectedMedia = ref(null);
 const showPreview = ref(false);
 const resizerStyle = ref({ top: 0, left: 0, width: 0, height: 0 });
 
+const activeStates = ref({
+  H1: false,
+  H2: false,
+  H3: false,
+  P: false,
+  bold: false,
+  italic: false,
+  underline: false,
+  ul: false,
+  ol: false,
+  alignLeft: false,
+  alignCenter: false,
+  alignRight: false,
+});
+
+// Durumları Güncelleyen Fonksiyon (Mavi renkleri bu ayarlar)
+const updateButtonStates = () => {
+  if (typeof window === "undefined" || !editorRef.value) return;
+
+  // 1. İmlecin olduğu yerdeki ana elemanı bul (H1 mi, P mi?)
+  const selection = window.getSelection();
+  let parentTag = "";
+
+  if (selection.rangeCount > 0) {
+    let node = selection.getRangeAt(0).startContainer;
+    // Yazı düğümündeysek (Text Node), bir üstteki gerçek etikete (element) çık
+    node = node.nodeType === 3 ? node.parentNode : node;
+    // Editörün dışına çıkmadan en yakın blok etiketini bul
+    const closestBlock = node.closest("h1, h2, h3, p, div, li");
+    parentTag = closestBlock ? closestBlock.tagName.toUpperCase() : "";
+  }
+
+  // 2. Butonları bu etikete göre yak (Aktif/Pasif yap)
+  activeStates.value.H1 = parentTag === "H1";
+  activeStates.value.H2 = parentTag === "H2";
+  activeStates.value.H3 = parentTag === "H3";
+
+  // Eğer H1, H2 veya H3 değilse, "Text" (P) butonu yansın
+  activeStates.value.P =
+    parentTag === "P" ||
+    parentTag === "DIV" ||
+    parentTag === "" ||
+    parentTag === "LI";
+
+  activeStates.value.alignLeft = textAlign === "justifyLeft";
+  activeStates.value.alignCenter = textAlign === "justifyCenter";
+  activeStates.value.alignRight = textAlign === "justifyRight";
+  // 3. Bold, Italic gibi stiller için tarayıcı kontrolü hala en iyisi
+  activeStates.value.bold = document.queryCommandState("bold");
+  activeStates.value.italic = document.queryCommandState("italic");
+  activeStates.value.underline = document.queryCommandState("underline");
+  activeStates.value.ul = document.queryCommandState("insertUnorderedList");
+  activeStates.value.ol = document.queryCommandState("insertOrderedList");
+};
+
 const execAction = (command, value = null) => {
-  document.execCommand(command, false, value);
-  updateContent();
+  if (typeof window === "undefined" || !editorRef.value) return;
   editorRef.value.focus();
-};
+  const isAlignment = command.startsWith("justify");
+  if (command === "formatBlock") {
+    const currentBlock = document.queryCommandValue("formatBlock");
 
-const isTag = (tagName) => {
-  if (!editorRef.value) return false;
-  return document.queryCommandValue("formatBlock") === tagName.toLowerCase();
-};
+    // 1. Eğer zaten o başlıktaysa, P yaparak iptal et (Toggle)
+    if (currentBlock === value.toLowerCase()) {
+      document.execCommand(command, false, "<P>");
+    } else {
+      if (document.queryCommandState("insertUnorderedList")) {
+        document.execCommand("insertUnorderedList", false, null);
+      }
+      if (document.queryCommandState("insertOrderedList")) {
+        document.execCommand("insertOrderedList", false, null);
+      }
 
-const exportToPDF = () => {
-  const element = document.getElementById("editor-content-area");
-
-  if (window.html2pdf) {
-    const opt = {
-      margin: 10,
-      filename: "belge.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
-    window.html2pdf().set(opt).from(element).save();
+      document.execCommand(command, false, `<${value}>`);
+    }
   } else {
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-    script.onload = exportToPDF;
-    document.head.appendChild(script);
+    if (isAlignment) {
+      fixListAlignment();
+    }
+    document.execCommand(command, false, value);
+  }
+
+  updateContent();
+  updateButtonStates();
+};
+const fixListAlignment = () => {
+  const selection = window.getSelection();
+  if (selection.rangeCount > 0) {
+    let node = selection.getRangeAt(0).startContainer;
+    node = node.nodeType === 3 ? node.parentNode : node;
+
+    // İmlecin olduğu yerdeki LI veya UL/OL elemanını bul
+    const listItem = node.closest("li");
+    const listParent = node.closest("ul, ol");
+
+    if (listItem) {
+      // Sadece o satırı düzelt
+      listItem.style.listStylePosition = "inside";
+    }
+
+    if (listParent && !listItem) {
+      // Eğer tüm liste seçiliyse tüm alt elemanları düzelt
+      listParent.querySelectorAll("li").forEach((li) => {
+        li.style.listStylePosition = "inside";
+      });
+    }
   }
 };
 
-const exportToWord = () => {
-  const header =
-    "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'></head><body>";
-  const footer = "</body></html>";
-  const sourceHTML =
-    header + document.getElementById("editor-content-area").innerHTML + footer;
-
-  const source =
-    "data:application/vnd.ms-word;charset=utf-8," +
-    encodeURIComponent(sourceHTML);
-  const fileDownload = document.createElement("a");
-  document.body.appendChild(fileDownload);
-  fileDownload.href = source;
-  fileDownload.download = "belge.doc";
-  fileDownload.click();
-  document.body.removeChild(fileDownload);
-};
-
 const insertTable = () => {
-  const rows = prompt("Satır sayısı:", "3");
-  const cols = prompt("Sütun sayısı:", "2");
+  const rows = prompt("col counter:", "3");
+  const cols = prompt("row counter:", "2");
   if (rows && cols) {
     let tableHtml = `<table class="resizable-media" style="width:100%; border-collapse:collapse; margin:10px 0; border:1px solid #ccc; display:inline-table;">`;
     for (let i = 0; i < rows; i++) {
@@ -224,7 +408,26 @@ const insertTable = () => {
     updateContent();
   }
 };
-
+const handleEnter = () => {
+  setTimeout(() => {
+    updateButtonStates();
+    updateContent();
+  }, 10);
+};
+const handleKeyUp = (e) => {
+  // Sadece yön tuşları veya silme tuşları basıldığında da butonları tazele
+  const navKeys = [
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "Backspace",
+    "Delete",
+  ];
+  if (navKeys.includes(e.key)) {
+    updateButtonStates();
+  }
+};
 const addYoutubeVideo = () => {
   const url = prompt(
     "Youtube Video URL (örn: https://www.youtube.com/watch?v=dQw4w9WgXcQ):"
@@ -333,6 +536,9 @@ const updateContent = () => {
 
 onMounted(() => {
   editorRef.value.innerHTML = "";
+  if (typeof document !== "undefined") {
+    document.execCommand("defaultParagraphSeparator", false, "p");
+  }
 });
 </script>
 
@@ -413,6 +619,7 @@ onMounted(() => {
   font-size: 1.8rem;
   font-weight: 700;
 }
+
 .ve-editor-area :deep(p) {
   margin-bottom: 1rem;
 }
@@ -476,5 +683,27 @@ onMounted(() => {
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #ddd;
+}
+.ve-editor-area :deep(ul) {
+  list-style-type: disc !important;
+  margin-left: 25px !important;
+}
+.ve-editor-area :deep(ol) {
+  list-style-type: decimal !important;
+  margin-left: 25px !important;
+}
+
+.ve-editor-area :deep(ul),
+.ve-editor-area :deep(ol) {
+  list-style-position: inside !important; /* Noktayı içeri alır */
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  list-style-type: inherit;
+}
+
+.ve-editor-area :deep(li) {
+  /* li elemanının içindeki metnin hizalanmasını sağlar */
+  text-align: inherit;
+  display: list-item; /* Liste özelliğini koru */
 }
 </style>
