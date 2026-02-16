@@ -1,57 +1,28 @@
 <template>
-  <div
-    class="ve-custom-editor-wrapper"
-    :style="{ '--ve-border-color': borderColor }"
-    @click="deselectMedia"
-    @keydown.enter="handleEnter"
-    @mouseup="updateButtonStates"
-    @keyup="updateButtonStates"
-  >
+  <div class="ve-custom-editor-wrapper" :style="{ '--ve-border-color': borderColor }" @click="deselectMedia"
+    @keydown.enter="handleEnter" @mouseup="updateButtonStates" @keyup="updateButtonStates" @input="updateContent">
     <div class="ve-toolbar">
       <div class="ve-group">
-        <button
-          @click="execAction('formatBlock', 'H1')"
-          :class="{ 've-active': activeStates.H1 }"
-        >
+        <button @click="execAction('formatBlock', 'H1')" :class="{ 've-active': activeStates.H1 }">
           H1
         </button>
-        <button
-          @click="execAction('formatBlock', 'H2')"
-          :class="{ 've-active': activeStates.H2 }"
-        >
+        <button @click="execAction('formatBlock', 'H2')" :class="{ 've-active': activeStates.H2 }">
           H2
         </button>
-        <button
-          @click="execAction('formatBlock', 'H3')"
-          :class="{ 've-active': activeStates.H3 }"
-        >
+        <button @click="execAction('formatBlock', 'H3')" :class="{ 've-active': activeStates.H3 }">
           H3
         </button>
-        <button
-          @click="execAction('formatBlock', 'P')"
-          :class="{ 've-active': activeStates.P }"
-        >
+        <button @click="execAction('formatBlock', 'P')" :class="{ 've-active': activeStates.P }">
           Text
         </button>
       </div>
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <button
-          @click="execAction('insertUnorderedList')"
-          title="Noktalı Liste"
-          :class="{ 've-active': activeStates.ul }"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+        <button @click="execAction('insertUnorderedList')" title="Noktalı Liste"
+          :class="{ 've-active': activeStates.ul }">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="9" y1="6" x2="20" y2="6"></line>
             <line x1="9" y1="12" x2="20" y2="12"></line>
             <line x1="9" y1="18" x2="20" y2="18"></line>
@@ -60,21 +31,10 @@
             <circle cx="4" cy="18" r="1.5" fill="currentColor"></circle>
           </svg>
         </button>
-        <button
-          @click="execAction('insertOrderedList')"
-          title="Numaralı Liste"
-          :class="{ 've-active': activeStates.ol }"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+        <button @click="execAction('insertOrderedList')" title="Numaralı Liste"
+          :class="{ 've-active': activeStates.ol }">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="10" y1="6" x2="21" y2="6"></line>
             <line x1="10" y1="12" x2="21" y2="12"></line>
             <line x1="10" y1="18" x2="21" y2="18"></line>
@@ -87,19 +47,13 @@
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <select
-          @change="execAction('fontName', $event.target.value)"
-          class="ve-font-select ve-input"
-        >
+        <select @change="execAction('fontName', $event.target.value)" class="ve-font-select ve-input">
           <option value="Arial">Arial</option>
           <option value="Verdana">Verdana</option>
           <option value="Georgia">Georgia</option>
           <option value="Courier New">Monospace</option>
         </select>
-        <select
-          @change="execAction('fontSize', $event.target.value)"
-          class="ve-size-select ve-input"
-        >
+        <select @change="execAction('fontSize', $event.target.value)" class="ve-size-select ve-input">
           <option value="1">S</option>
           <option value="3" selected>M</option>
           <option value="5">L</option>
@@ -110,32 +64,32 @@
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <button
-          @click="execAction('bold')"
-          title="Kalın"
-          :class="{ 've-active': activeStates.bold }"
-        >
+        <button @click="execAction('bold')" title="Kalın" :class="{ 've-active': activeStates.bold }">
           <b>B</b>
         </button>
-        <button
-          @click="execAction('italic')"
-          :class="{ 've-active': activeStates.italic }"
-          title="İtalik"
-        >
+        <button @click="execAction('italic')" :class="{ 've-active': activeStates.italic }" title="İtalik">
           <i>I</i>
         </button>
-        <button
-          @click="execAction('underline')"
-          :class="{ 've-active': activeStates.underline }"
-          title="Altı Çizili"
-        >
+        <button @click="execAction('underline')" :class="{ 've-active': activeStates.underline }" title="Altı Çizili">
           <u>U</u>
         </button>
-        <input
-          type="color"
-          @input="execAction('foreColor', $event.target.value)"
-          class="ve-color-picker"
-        />
+        <button @click="execAction('strikeThrough')" :class="{ 've-active': activeStates.strikeThrough }"
+          title="Üstü Çizili">
+          <span style="text-decoration: line-through;">S</span>
+        </button>
+        <div class="ve-group" style="position: relative;">
+          <button type="button" @click.stop="showHighlightPicker = !showHighlightPicker">
+            🖍️
+          </button>
+
+          <div v-if="showHighlightPicker" class="ve-highlight-dropdown">
+            <div v-for="color in highlightColors" :key="color" @mousedown.prevent="applyHighlight(color)"
+              class="ve-color-circle" :style="{ backgroundColor: color === 'transparent' ? 'white' : color }">
+              <span v-if="color === 'transparent'" style="color:red; font-weight:bold;">X</span>
+            </div>
+          </div>
+        </div>
+        <input type="color" @input="execAction('foreColor', $event.target.value)" class="ve-color-picker" />
       </div>
 
       <div class="ve-divider"></div>
@@ -145,115 +99,56 @@
         <button @click="$refs.fileInput.click()">🖼️</button>
         <button @click="addYoutubeVideo">📺</button>
         <button @click="insertTable">📊</button>
-        <input
-          type="file"
-          ref="fileInput"
-          hidden
-          accept="image/*"
-          @change="handleImageUpload"
-        />
+        <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload" />
       </div>
 
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <button
-          @click="execAction('justifyLeft')"
-          :class="{ 've-active': activeStates.alignLeft }"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+        <button @click="execAction('justifyLeft')" :class="{ 've-active': activeStates.alignLeft }">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="17" y1="10" x2="3" y2="10"></line>
             <line x1="21" y1="6" x2="3" y2="6"></line>
             <line x1="21" y1="14" x2="3" y2="14"></line>
             <line x1="17" y1="18" x2="3" y2="18"></line>
           </svg>
         </button>
-        <button
-          @click="execAction('justifyCenter')"
-          :class="{ 've-active': activeStates.alignCenter }"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+        <button @click="execAction('justifyCenter')" :class="{ 've-active': activeStates.alignCenter }">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="10" x2="6" y2="10"></line>
             <line x1="21" y1="6" x2="3" y2="6"></line>
             <line x1="21" y1="14" x2="3" y2="14"></line>
             <line x1="18" y1="18" x2="6" y2="18"></line>
           </svg>
         </button>
-        <button
-          @click="execAction('justifyRight')"
-          :class="{ 've-active': activeStates.alignRight }"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
+        <button @click="execAction('justifyRight')" :class="{ 've-active': activeStates.alignRight }">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
             <line x1="21" y1="10" x2="7" y2="10"></line>
             <line x1="21" y1="6" x2="3" y2="6"></line>
             <line x1="21" y1="14" x2="3" y2="14"></line>
             <line x1="21" y1="18" x2="7" y2="18"></line>
           </svg>
         </button>
-        <button
-          v-if="allowPreview"
-          @click="showPreview = true"
-          class="ve-preview-btn"
-        >
+        <button v-if="allowPreview" @click="showPreview = true" class="ve-preview-btn">
           👁️
         </button>
       </div>
     </div>
 
     <div class="ve-editor-container">
-      <div
-        ref="editorRef"
-        class="ve-editor-area"
-        contenteditable="true"
-        @input="updateContent"
-        @click="handleEditorClick"
-      ></div>
+      <div ref="editorRef" class="ve-editor-area" contenteditable="true" @input="updateContent"
+        @click="handleEditorClick"></div>
 
-      <div
-        v-if="selectedMedia"
-        class="ve-resizer-overlay"
-        :style="resizerStyle"
-      >
-        <div
-          class="ve-resizer-handle"
-          @mousedown.stop.prevent="startResizing"
-        ></div>
+      <div v-if="selectedMedia" class="ve-resizer-overlay" :style="resizerStyle">
+        <div class="ve-resizer-handle" @mousedown.stop.prevent="startResizing"></div>
       </div>
     </div>
 
     <Teleport to="body">
-      <div
-        v-if="showPreview"
-        class="ve-modal-overlay"
-        @click.self="showPreview = false"
-      >
+      <div v-if="showPreview" class="ve-modal-overlay" @click.self="showPreview = false">
         <div class="ve-modal-content">
           <div class="ve-modal-header">
             <h3>Preview</h3>
@@ -295,8 +190,63 @@ const activeStates = ref({
   alignLeft: false,
   alignCenter: false,
   alignRight: false,
+  strikeThrough: false,
 });
+const showHighlightPicker = ref(false);
+const highlightColors = [
+  '#ffff00', // Sarı
+  '#a2ff00', // fıstık yeşili
+  '#00ffff', // Turkuaz
+  '#ffadd6', // Pembe
+  '#ff5e5e', // Kırmızımsı
+  '#ffa500', // Turuncu
+  '#d1d1d1', // Gri
+  'transparent' // Renk silme (X)
+];
 
+const applyHighlight = (color) => {
+  if (!editorRef.value) return;
+
+  const selection = window.getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) return;
+
+  const range = selection.getRangeAt(0);
+
+  // 1. Manuel olarak bir SPAN oluştur ve boya
+  const span = document.createElement("span");
+  span.style.backgroundColor = color;
+
+  // Eğer renk 'transparent' ise boyayı kaldırıyoruz demektir
+  if (color === 'transparent') {
+    span.style.backgroundColor = 'transparent';
+  }
+
+  // 2. Seçili metni bu span içine taşı
+  try {
+    range.surroundContents(span);
+  } catch (e) {
+    // Eğer karmaşık bir seçim varsa (başlık + paragraf gibi) standart yönteme dön
+    document.execCommand('hiliteColor', false, color);
+  }
+
+  // 3. KESİN ÇÖZÜM: Span'ın dışına çık ve stili sıfırla
+  const afterSpan = document.createTextNode('\u200B'); // Görünmez boşluk
+  span.after(afterSpan);
+
+  // 4. İmleci bu boşluğun sonuna taşı
+  const newRange = document.createRange();
+  newRange.setStartAfter(afterSpan);
+  newRange.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(newRange);
+
+  // 5. Tarayıcıya "Artık boyama bitti" diye bağır :)
+  document.execCommand('hiliteColor', false, 'transparent');
+  document.execCommand('removeFormat', false, null);
+
+  showHighlightPicker.value = false;
+  updateContent();
+};
 // Durumları Güncelleyen Fonksiyon (Mavi renkleri bu ayarlar)
 const updateButtonStates = () => {
   if (typeof window === "undefined" || !editorRef.value) return;
@@ -314,6 +264,7 @@ const updateButtonStates = () => {
     parentTag = closestBlock ? closestBlock.tagName.toUpperCase() : "";
   }
 
+
   // 2. Butonları bu etikete göre yak (Aktif/Pasif yap)
   activeStates.value.H1 = parentTag === "H1";
   activeStates.value.H2 = parentTag === "H2";
@@ -326,15 +277,22 @@ const updateButtonStates = () => {
     parentTag === "" ||
     parentTag === "LI";
 
-  activeStates.value.alignLeft = textAlign === "justifyLeft";
-  activeStates.value.alignCenter = textAlign === "justifyCenter";
-  activeStates.value.alignRight = textAlign === "justifyRight";
+  // activeStates.value.alignLeft = textAlign === "justifyLeft";
+  // activeStates.value.alignCenter = textAlign === "justifyCenter";
+  // activeStates.value.alignRight = textAlign === "justifyRight";
+  activeStates.value.strikeThrough = document.queryCommandState("strikeThrough");
+
+  activeStates.value.alignLeft = document.queryCommandState("justifyLeft");
+  activeStates.value.alignCenter = document.queryCommandState("justifyCenter");
+  activeStates.value.alignRight = document.queryCommandState("justifyRight");
+
   // 3. Bold, Italic gibi stiller için tarayıcı kontrolü hala en iyisi
   activeStates.value.bold = document.queryCommandState("bold");
   activeStates.value.italic = document.queryCommandState("italic");
   activeStates.value.underline = document.queryCommandState("underline");
   activeStates.value.ul = document.queryCommandState("insertUnorderedList");
   activeStates.value.ol = document.queryCommandState("insertOrderedList");
+
 };
 
 const execAction = (command, value = null) => {
@@ -464,8 +422,8 @@ const handleEditorClick = (e) => {
   const target =
     e.target.closest(".resizable-media") ||
     (e.target.tagName === "IMG" ||
-    e.target.tagName === "IFRAME" ||
-    e.target.tagName === "TABLE"
+      e.target.tagName === "IFRAME" ||
+      e.target.tagName === "TABLE"
       ? e.target
       : null);
   if (
@@ -535,8 +493,11 @@ const updateContent = () => {
 };
 
 onMounted(() => {
-  editorRef.value.innerHTML = "";
+  if (editorRef.value && editorRef.value.innerHTML === "") {
+    editorRef.value.innerHTML = "<p><br></p>"; // Boş başlamasın, bir p ile başlasın
+  }
   if (typeof document !== "undefined") {
+    // Enter'a basınca her zaman <p> oluşturmasını zorla
     document.execCommand("defaultParagraphSeparator", false, "p");
   }
 });
@@ -589,6 +550,7 @@ onMounted(() => {
   color: white !important;
   border: none !important;
 }
+
 .ve-divider {
   width: 1px;
   height: 30px;
@@ -599,6 +561,7 @@ onMounted(() => {
   position: relative;
   width: 100%;
 }
+
 .ve-editor-area {
   min-height: 400px;
   padding: 30px;
@@ -615,14 +578,23 @@ onMounted(() => {
   font-weight: 800;
   margin-bottom: 1rem;
 }
+
 .ve-editor-area :deep(h2) {
   font-size: 1.8rem;
   font-weight: 700;
 }
 
 .ve-editor-area :deep(p) {
-  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 12px;
+  line-height: 1.6;
+
 }
+
+.ve-editor-area :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
 .ve-editor-area :deep(.resizable-media) {
   cursor: pointer;
   margin: 10px 5px;
@@ -636,6 +608,7 @@ onMounted(() => {
   border: 2px solid #3498db;
   z-index: 10;
 }
+
 .ve-resizer-handle {
   position: absolute;
   width: 15px;
@@ -660,6 +633,7 @@ onMounted(() => {
   align-items: center;
   z-index: 9999;
 }
+
 .ve-modal-content {
   background: #fff;
   width: 85%;
@@ -668,26 +642,31 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
 }
+
 .ve-modal-header {
   padding: 15px 20px;
   border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
 }
+
 .ve-preview-body {
   padding: 30px;
   overflow-y: auto;
   flex-grow: 1;
 }
+
 .ve-input {
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #ddd;
 }
+
 .ve-editor-area :deep(ul) {
   list-style-type: disc !important;
   margin-left: 25px !important;
 }
+
 .ve-editor-area :deep(ol) {
   list-style-type: decimal !important;
   margin-left: 25px !important;
@@ -695,7 +674,8 @@ onMounted(() => {
 
 .ve-editor-area :deep(ul),
 .ve-editor-area :deep(ol) {
-  list-style-position: inside !important; /* Noktayı içeri alır */
+  list-style-position: inside !important;
+  /* Noktayı içeri alır */
   padding-left: 0 !important;
   margin-left: 0 !important;
   list-style-type: inherit;
@@ -704,6 +684,48 @@ onMounted(() => {
 .ve-editor-area :deep(li) {
   /* li elemanının içindeki metnin hizalanmasını sağlar */
   text-align: inherit;
-  display: list-item; /* Liste özelliğini koru */
+  display: list-item;
+  /* Liste özelliğini koru */
+}
+
+.ve-editor-area :deep(li)::marker {
+  text-align: unset !important;
+}
+
+.ve-toolbar button.ve-active {
+  background: #3498db !important;
+  /* Mavi renk */
+  color: white !important;
+  border-color: #2980b9 !important;
+}
+
+.ve-highlight-dropdown {
+  position: absolute;
+  top: 40px;
+  /* Butonun hemen altı */
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  /* En üstte görünsün */
+  min-width: 140px;
+}
+
+.ve-color-circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
