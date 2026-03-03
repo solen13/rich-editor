@@ -95,10 +95,10 @@
       <div class="ve-divider"></div>
 
       <div class="ve-group">
-        <button @click="addLink">🔗</button>
+        <button @click="openModal('link')">🔗</button>
         <button @click="$refs.fileInput.click()">🖼️</button>
-        <button @click="addYoutubeVideo">📺</button>
-        <button @click="insertTable">📊</button>
+        <button @click="openModal('video')">📺</button>
+        <button @click="openModal('table')">📊</button>
         <input type="file" ref="fileInput" hidden accept="image/*" @change="handleImageUpload" />
       </div>
 
@@ -160,13 +160,47 @@
         </div>
       </div>
     </Teleport>
+    <Teleport to="body">
+      <div v-if="showInputModal" class="ve-modal-overlay" @click.self="showInputModal = false">
+        <div class="ve-modal-content ve-small-modal">
+          <div class="ve-modal-header">
+            <h3 v-if="modalType === 'link'">Link Add</h3>
+            <h3 v-if="modalType === 'video'">YouTube Video Add</h3>
+            <h3 v-if="modalType === 'table'">Table Create</h3>
+            <button @click="showInputModal = false" class="ve-close-modal">X</button>
+          </div>
+          <div class="ve-modal-body">
+            <div v-if="modalType === 'link' || modalType === 'video'">
+              <label>URL Address:</label>
+              <input v-model="modalData.url" type="text" class="ve-main-input" placeholder="https://..."
+                @keyup.enter="handleModalConfirm">
+            </div>
+
+            <div v-if="modalType === 'table'" class="ve-table-inputs">
+              <div>
+                <label>Rows:</label>
+                <input v-model.number="modalData.rows" type="number" class="ve-main-input">
+              </div>
+              <div>
+                <label>Cols:</label>
+                <input v-model.number="modalData.cols" type="number" class="ve-main-input">
+              </div>
+            </div>
+
+            <div class="ve-modal-footer">
+              <button @click="handleModalConfirm" class="ve-confirm-btn">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits } from "vue";
+import {ref, onMounted, defineEmits} from "vue";
 const props = defineProps({
-  allowPreview: { type: Boolean, default: true },
+  allowPreview: {type: Boolean, default: true},
 });
 const emit = defineEmits(["update:modelValue", "change"]);
 const editorRef = ref(null);
@@ -175,7 +209,7 @@ const content = ref("");
 const charCount = ref(0);
 const selectedMedia = ref(null);
 const showPreview = ref(false);
-const resizerStyle = ref({ top: 0, left: 0, width: 0, height: 0 });
+const resizerStyle = ref({top: 0, left: 0, width: 0, height: 0});
 
 const activeStates = ref({
   H1: false,
@@ -193,6 +227,18 @@ const activeStates = ref({
   strikeThrough: false,
 });
 const showHighlightPicker = ref(false);
+const showInputModal = ref(false);
+const modalType = ref(''); // 'link', 'video', 'table'
+const modalData = ref({
+  url: '',
+  rows: 3,
+  cols: 3
+});
+const openModal = (type) => {
+  modalType.value = type;
+  modalData.value = {url: '', rows: 3, cols: 3}; // Reset
+  showInputModal.value = true;
+};
 const highlightColors = [
   '#ffff00', // Sarı
   '#a2ff00', // fıstık yeşili
@@ -315,6 +361,7 @@ const execAction = (command, value = null) => {
 
       document.execCommand(command, false, `<${value}>`);
     }
+
   } else {
     if (isAlignment) {
       fixListAlignment();
@@ -322,9 +369,33 @@ const execAction = (command, value = null) => {
     document.execCommand(command, false, value);
   }
 
+  if (isAlignment && selectedMedia.value) {
+    const el = selectedMedia.value;
+
+
+    el.style.verticalAlign = "top";
+
+    if (command === "justifyCenter") {
+      el.style.float = "none";
+      el.style.display = "inline-block";
+      el.style.margin = "10px auto";
+
+    } else if (command === "justifyLeft") {
+      el.style.display = "inline-block";
+      el.style.float = "left";
+      el.style.margin = "0 20px 10px 0";
+    } else if (command === "justifyRight") {
+      el.style.display = "inline-block";
+      el.style.float = "right";
+      el.style.margin = "0 0 10px 20px";
+    }
+  }
+
   updateContent();
   updateButtonStates();
 };
+
+
 const fixListAlignment = () => {
   const selection = window.getSelection();
   if (selection.rangeCount > 0) {
@@ -349,22 +420,57 @@ const fixListAlignment = () => {
   }
 };
 
-const insertTable = () => {
-  const rows = prompt("col counter:", "3");
-  const cols = prompt("row counter:", "2");
-  if (rows && cols) {
-    let tableHtml = `<table class="resizable-media" style="width:100%; border-collapse:collapse; margin:10px 0; border:1px solid #ccc; display:inline-table;">`;
-    for (let i = 0; i < rows; i++) {
-      tableHtml += "<tr>";
-      for (let j = 0; j < cols; j++) {
-        tableHtml += `<td style="border:1px solid #ccc; padding:8px; min-width:50px;">Hücre</td>`;
-      }
-      tableHtml += "</tr>";
-    }
-    tableHtml += "</table><p>&nbsp;</p>";
-    document.execCommand("insertHTML", false, tableHtml);
-    updateContent();
+const handleModalConfirm = () => {
+  if (modalType.value === 'link') {
+    if (modalData.value.url) execAction('createLink', modalData.value.url);
   }
+  else if (modalType.value === 'video') {
+    insertYoutubeFromUrl(modalData.value.url);
+  }
+  else if (modalType.value === 'table') {
+    generateTable(modalData.value.rows, modalData.value.cols);
+  }
+  showInputModal.value = false;
+};
+
+const insertYoutubeFromUrl = (url) => {
+  if (!url) return;
+
+  // YouTube ID'sini ayıklamak için geliştirilmiş Regex
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  const videoId = (match && match[2].length === 11) ? match[2] : null;
+
+  if (videoId) {
+    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    const html = `
+      <iframe 
+        src="${embedUrl}" 
+        class="resizable-media" 
+        style="width:480px; height:270px; display:inline-block; margin:5px;" 
+        frameborder="0" 
+        allowfullscreen
+      ></iframe>&nbsp;`;
+
+    editorRef.value.focus(); // Editöre odaklanmayı garanti et
+    document.execCommand("insertHTML", false, html);
+    updateContent();
+  } else {
+    alert("Geçersiz YouTube URL'si!");
+  }
+};
+const generateTable = (rows, cols) => {
+  let tableHtml = `<table class="resizable-media" style="width:100%; border-collapse:collapse; margin:10px 0; border:1px solid #ccc; display:inline-table; vertical-align:top;">`;
+  for (let i = 0; i < rows; i++) {
+    tableHtml += "<tr>";
+    for (let j = 0; j < cols; j++) {
+      tableHtml += `<td style="border:1px solid #ccc; padding:8px; min-width:50px;">Hücre</td>`;
+    }
+    tableHtml += "</tr>";
+  }
+  tableHtml += "</table><p>&nbsp;</p>";
+  document.execCommand("insertHTML", false, tableHtml);
+  updateContent();
 };
 const handleEnter = () => {
   setTimeout(() => {
@@ -372,50 +478,19 @@ const handleEnter = () => {
     updateContent();
   }, 10);
 };
-const handleKeyUp = (e) => {
-  // Sadece yön tuşları veya silme tuşları basıldığında da butonları tazele
-  const navKeys = [
-    "ArrowUp",
-    "ArrowDown",
-    "ArrowLeft",
-    "ArrowRight",
-    "Backspace",
-    "Delete",
-  ];
-  if (navKeys.includes(e.key)) {
-    updateButtonStates();
-  }
-};
-const addYoutubeVideo = () => {
-  const url = prompt(
-    "Youtube Video URL (örn: https://www.youtube.com/watch?v=dQw4w9WgXcQ):"
-  );
-  if (url) {
-    const videoId = url.split("v=")[1]?.split("&")[0] || url.split("/").pop();
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-    const html = `<iframe src="${embedUrl}" class="resizable-media" style="width:400px; height:225px; display:inline-block;margin:5px;" frameborder="0" allowfullscreen></iframe>&nbsp;`;
-    document.execCommand("insertHTML", false, html);
-    updateContent();
-  }
-};
 
 const handleImageUpload = (e) => {
   const file = e.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const html = `<img src="${ev.target.result}" class="resizable-media" style="width:250px; display:inline-block; margin:5px;" />&nbsp;`;
+      const html = `<img src="${ev.target.result}" class="resizable-media" style="width:250px; display:inline-block; margin:5px; float:left;" />&nbsp;`;
       document.execCommand("insertHTML", false, html);
       updateContent();
     };
     reader.readAsDataURL(file);
     e.target.value = "";
   }
-};
-
-const addLink = () => {
-  const url = prompt("Add url", "");
-  if (url) execAction("createLink", url);
 };
 
 const handleEditorClick = (e) => {
@@ -727,5 +802,56 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.ve-small-modal {
+  max-width: 400px;
+  width: 90% !important;
+  height: auto !important;
+}
+
+.ve-modal-body {
+  padding: 20px;
+}
+
+.ve-main-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.ve-table-inputs {
+  display: flex;
+  gap: 15px;
+}
+
+.ve-modal-footer {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.ve-confirm-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.ve-confirm-btn:hover {
+  background: #2980b9;
+}
+
+.ve-close-modal {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: bold;
 }
 </style>
